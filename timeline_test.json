@@ -1,0 +1,20 @@
+[
+  {"t": 0.5,  "text": "engine v2 上线测试",   "color": "#FFFFFF"},
+  {"t": 1.0,  "text": "顶部优先·紧贴排布",    "color": "#4ADE80"},
+  {"t": 1.5,  "text": "大字占两行！",          "color": "#FFD700", "size": "large"},
+  {"t": 3.0,  "text": "233333",               "color": "#FFFFFF"},
+  {"t": 3.35, "text": "233333",               "color": "#FFFFFF"},
+  {"t": 3.7,  "text": "233333",               "color": "#FFFFFF"},
+  {"t": 5.0,  "text": "零光栅化·纯移动",       "color": "#22D3EE"},
+  {"t": 7.0,  "text": "前方高能！！",          "color": "#FF4D4D", "size": "large"},
+  {"t": 9.0,  "text": "阴阳怪气中...",         "color": "#FF7EB9"},
+  {"t": 11.0, "text": "CPU占用测试中",         "color": "#FFD700"},
+  {"t": 13.0, "text": "awsl",                 "color": "#FFFFFF"},
+  {"t": 15.0, "text": "紧贴不追尾",            "color": "#4ADE80", "size": "large"},
+  {"t": 17.0, "text": "泪目",                 "color": "#FFFFFF"},
+  {"t": 19.0, "text": "输入穿透验证中",         "color": "#00A1D6"},
+  {"t": 21.0, "text": "好活",                 "color": "#FFFFFF"},
+  {"t": 23.0, "text": "弹幕护体！弹幕护体！",    "color": "#FF4D4D"},
+  {"t": 25.0, "text": "完结撒花",              "color": "#FFFFFF"},
+  {"t": 26.0, "text": "V2 引擎就绪",           "color": "#FFD700", "size": "large"}
+]

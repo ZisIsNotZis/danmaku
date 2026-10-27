@@ -15,7 +15,9 @@
 
 ## 快速开始
 
-需要 Python 3、PyQt5、X11 会话，以及 `Noto Sans CJK SC` 字体。
+需要 Python 3、PyQt5、X11 会话，以及一款中文字体。演示默认使用
+`Noto Sans CJK SC`（Debian/Ubuntu 上是 `fonts-noto-cjk` 包）；`danmaku.py` 也接受
+`--font FAMILY` 换成别的字体。
 
 ```bash
 git clone https://github.com/ZisIsNotZis/danmaku.git
@@ -24,7 +26,7 @@ python3 -m pip install -r requirements.txt
 python3 danmaku.py
 ```
 
-一条弹幕会在 10 秒内横穿屏幕。换成自己的文字和节奏：
+一条弹幕会在 10 秒内横穿屏幕，然后浮层自动退出。换成自己的文字和节奏：
 
 ```bash
 python3 danmaku.py "前方高能！" --duration 6 --font-size 48 --vertical 0.5
@@ -46,8 +48,8 @@ python3 danmaku.py "前方高能！" --duration 6 --font-size 48 --vertical 0.5
   输入区域兜底；验证脚本会打印空的输入区域。
 - **弹幕风暴。** `danmaku_storm.py` 在一块全屏窗口上以约每秒 15 条的速度铺满屏幕，
   这是引擎开发时用来对照的参考模型。
-- **可复现的截图。** 三个脚本负责启动演示、检查窗口、用 `ffmpeg` 抓帧，并从
-  `/proc` 采样 CPU 时间。
+- **可复现的截图。** 三个脚本负责启动演示、检查窗口并用 `ffmpeg` 抓帧，其中
+  `verify_engine.sh` 还会从 `/proc` 采样引擎的 CPU 时间。
 
 ## 架构
 
@@ -135,4 +137,4 @@ X11 输入区域的实现，而不是在它外面再包一层。另一个方向�
 
 ## 许可证
 
-[GNU AGPL v3](LICENSE.md)。
+[GNU AGPL v3](LICENSE.md)，© 2026 ZisIsNotZis。

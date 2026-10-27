@@ -15,7 +15,9 @@ terminals underneath keep working.</i></p>
 
 ## Quick start
 
-You need Python 3, PyQt5, an X11 session, and the `Noto Sans CJK SC` font.
+You need Python 3, PyQt5, an X11 session, and a CJK font. The demos default to
+`Noto Sans CJK SC` (`fonts-noto-cjk` on Debian/Ubuntu); `danmaku.py` also takes
+`--font FAMILY`.
 
 ```bash
 git clone https://github.com/ZisIsNotZis/danmaku.git
@@ -24,7 +26,8 @@ python3 -m pip install -r requirements.txt
 python3 danmaku.py
 ```
 
-One comment crosses the screen in 10 seconds. Your own text and timing:
+One comment crosses the screen in 10 seconds, then the overlay removes itself.
+Your own text and timing:
 
 ```bash
 python3 danmaku.py "前方高能！" --duration 6 --font-size 48 --vertical 0.5
@@ -49,8 +52,9 @@ right to left, while clicks reach whatever is underneath.
   X11 input-shape fallback; the verification scripts print the empty shape.
 - **A storm demo.** `danmaku_storm.py` floods the screen at ~15 comments/s on
   one fullscreen window — the reference model the engine was compared against.
-- **Reproducible captures.** Three scripts launch a demo, inspect the window,
-  grab frames with `ffmpeg`, and sample CPU time from `/proc`.
+- **Reproducible captures.** Three scripts launch a demo, inspect the window and
+  grab frames with `ffmpeg`; `verify_engine.sh` also samples engine CPU time from
+  `/proc`.
 
 ## Architecture
 
@@ -145,4 +149,4 @@ the current engine is complete for what it set out to do.
 
 ## License
 
-[GNU AGPL v3](LICENSE.md).
+[GNU AGPL v3](LICENSE.md), © 2026 ZisIsNotZis.

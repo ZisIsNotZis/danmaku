@@ -26,8 +26,9 @@ development is planned. AI/roast overlay functionality was moved to
 
 - Verification scripts: `verify_flight.sh`, `verify_engine.sh`,
   `verify_storm.sh`, with captured frames (`eng_*.png`, `storm_*.png`). They
-  check the empty X11 input shape (click-through), capture frames with
-  `ffmpeg`, and sample engine CPU time from `/proc/<pid>/stat`.
+  check the empty X11 input shape (click-through) and capture frames with
+  `ffmpeg`; `verify_engine.sh` also samples engine CPU time from
+  `/proc/<pid>/stat`.
 - The captures were taken on a 2560×1440 X11 session and scaled to 1280 px wide
   by the scripts.
 - Runtime dependencies are only Python 3, PyQt5, and an X11 session.

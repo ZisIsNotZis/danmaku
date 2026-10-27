@@ -1,5 +1,6 @@
 # Common local caches and temporary workspaces
 __pycache__/
+*.py[cod]
 node_modules/
 .pi/
 .tmp/
@@ -10,6 +11,11 @@ worktrees/
 # Local secrets, test caches, and generated logs
 .pytest_cache/
 .ruff_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
 .mypy_cache/
 .cache/
 .env

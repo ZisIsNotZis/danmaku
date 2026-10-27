@@ -21,6 +21,7 @@ CLI:
   danmaku_engine.py script timeline.json [--duration S]   # real-time playback
   danmaku_engine.py daemon [--duration S]                 # wait for push()
 """
+import argparse
 import atexit
 import ctypes
 import ctypes.util
@@ -225,10 +226,12 @@ class Engine(QObject):
 
 # --- CLI: real-time timeline player ------------------------------------------
 def run_timeline(path, duration_s):
-    app = QApplication(sys.argv)
+    app = QApplication([sys.argv[0]])
     app.setApplicationName("danmaku")
     with open(path) as f:
         entries = sorted(json.load(f), key=lambda e: e["t"])
+    if not entries:
+        sys.exit(f"timeline {path} is empty")
     dur_ms = int(duration_s * 1000) if duration_s else None
     eng = Engine(duration_ms=dur_ms)
     eng.start()
@@ -240,24 +243,48 @@ def run_timeline(path, duration_s):
             e = entries[state["i"]]
             eng.push(e.get("text", ""), e.get("color", "#FFFFFF"), e.get("size", "small"))
             state["i"] += 1
-        if state["i"] >= len(entries) and now > entries[-1]["t"] * 1000 + 300:
+        if dur_ms is not None and now > dur_ms:
+            ft.stop()
+            eng.close_feed()
+        elif state["i"] >= len(entries) and now > entries[-1]["t"] * 1000 + 300:
+            ft.stop()
             eng.close_feed()
     ft = QTimer(eng, interval=20, timeout=feeder)
     ft.start()
     sys.exit(app.exec_())
 
 
-def run_daemon():
-    app = QApplication(sys.argv)
+def run_daemon(duration_s=None):
+    app = QApplication([sys.argv[0]])
     app.setApplicationName("danmaku")
-    eng = Engine()
+    dur_ms = int(duration_s * 1000) if duration_s else None
+    eng = Engine(duration_ms=dur_ms)
     eng.start()
+    if dur_ms is not None:
+        QTimer.singleShot(dur_ms + LIFETIME_MS + 500, eng.close_feed)
     sys.exit(app.exec_())
 
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "script":
-        dur = float(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[3] == "--duration" else None
-        run_timeline(sys.argv[2], dur)
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Danmaku engine v2: one tiny moving window per comment.")
+    sub = parser.add_subparsers(dest="mode")
+    p_script = sub.add_parser("script", help="play a JSON timeline in real time")
+    p_script.add_argument("timeline", help="JSON list of {t, text, color, size}")
+    p_script.add_argument("--duration", type=float, metavar="SECONDS",
+                          help="stop accepting comments after this time")
+    p_daemon = sub.add_parser("daemon", help="host the engine for Engine.push()")
+    p_daemon.add_argument("--duration", type=float, metavar="SECONDS",
+                          help="stop accepting comments after this time")
+    args = parser.parse_args(argv)
+    duration = getattr(args, "duration", None)
+    if duration is not None and duration <= 0:
+        parser.error("--duration must be positive")
+    if args.mode == "script":
+        run_timeline(args.timeline, duration)
     else:
-        run_daemon()
+        run_daemon(duration)
+
+
+if __name__ == "__main__":
+    main()

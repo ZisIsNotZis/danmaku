@@ -12,7 +12,11 @@ Model (classic fixed-lifetime engines):
   the most recent one suffices by transitivity).
 - One full-screen borderless translucent window; empty X11 input shape makes
   the whole layer click-through.
+
+CLI:
+  danmaku_storm.py [--duration SECONDS]
 """
+import argparse
 import ctypes
 import ctypes.util
 import random
@@ -84,8 +88,9 @@ def force_empty_input_shape(xid):
 
 
 class Storm(QWidget):
-    def __init__(self):
+    def __init__(self, duration_ms=STORM_MS):
         super().__init__()
+        self.duration_ms = duration_ms
         self.setWindowFlags(
             Qt.FramelessWindowHint
             | Qt.WindowStaysOnTopHint
@@ -142,7 +147,7 @@ class Storm(QWidget):
 
     def try_spawn(self):
         now = self.clock.elapsed()
-        if now > STORM_MS:
+        if now > self.duration_ms:
             self.spawner.stop()
             return
         if random.random() > SPAWN_PROB:
@@ -182,7 +187,7 @@ class Storm(QWidget):
             keep.append(d)
         self.active = keep
         self.update()  # schedule paintEvent at ~60fps
-        if now > STORM_MS + LIFETIME_MS + 500 and not self.active:
+        if now > self.duration_ms + LIFETIME_MS + 500 and not self.active:
             QApplication.quit()
 
     def paintEvent(self, event):
@@ -194,10 +199,20 @@ class Storm(QWidget):
             p.drawPixmap(int(d["x"]), d["y"], d["pm"])
 
 
-def main():
-    app = QApplication(sys.argv)
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Danmaku storm: ~15 comments/s on one fullscreen overlay.")
+    parser.add_argument("--duration", type=float, default=STORM_MS / 1000,
+                        metavar="SECONDS",
+                        help="how long new comments keep spawning "
+                             "(default: %(default)s)")
+    args = parser.parse_args(argv)
+    if args.duration <= 0:
+        parser.error("--duration must be positive")
+
+    app = QApplication([sys.argv[0]])
     app.setApplicationName("danmaku-storm")
-    storm = Storm()
+    storm = Storm(duration_ms=int(args.duration * 1000))
     storm.setWindowTitle("danmaku-storm")
     storm.show()
     force_empty_input_shape(int(storm.winId()))

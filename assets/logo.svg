@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="danmaku">
+  <rect width="512" height="512" rx="112" fill="#0b0e14"/>
+  <!-- three comments in flight: solid body, fading trail to the right -->
+  <g>
+    <rect x="76" y="108" width="228" height="60" rx="30" fill="#ffffff"/>
+    <rect x="320" y="126" width="54" height="24" rx="12" fill="#ffffff" opacity=".45"/>
+    <rect x="392" y="130" width="30" height="16" rx="8" fill="#ffffff" opacity=".22"/>
+  </g>
+  <g>
+    <rect x="128" y="226" width="252" height="60" rx="30" fill="#00a1d6"/>
+    <rect x="396" y="244" width="44" height="24" rx="12" fill="#00a1d6" opacity=".5"/>
+    <rect x="456" y="248" width="24" height="16" rx="8" fill="#00a1d6" opacity=".25"/>
+  </g>
+  <g>
+    <rect x="64" y="344" width="182" height="60" rx="30" fill="#ff4d4d"/>
+    <rect x="262" y="362" width="60" height="24" rx="12" fill="#ff4d4d" opacity=".45"/>
+    <rect x="338" y="366" width="34" height="16" rx="8" fill="#ff4d4d" opacity=".22"/>
+  </g>
+</svg>

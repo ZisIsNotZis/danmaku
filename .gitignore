@@ -16,3 +16,6 @@ worktrees/
 .env.*
 !.env.example
 *.log
+
+# Frames written by verify_flight.sh (engine/storm frames are kept as evidence)
+shot_*.png

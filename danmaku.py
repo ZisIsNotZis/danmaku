@@ -5,7 +5,11 @@
 - Click-through: empty X11 input shape region (Qt flag + raw X11 fallback),
   so mouse events pass through to whatever is underneath.
 - Topmost via X11BypassWindowManagerHint: no decorations, no taskbar, no focus.
+
+CLI:
+  danmaku.py [TEXT] [--font FAMILY] [--font-size N] [--duration S] [--vertical 0..1]
 """
+import argparse
 import ctypes
 import ctypes.util
 import sys
@@ -44,8 +48,11 @@ def force_empty_input_shape(xid):
 
 
 class Danmaku(QWidget):
-    def __init__(self):
+    def __init__(self, text=TEXT, font_family=FONT_FAMILY, font_size=FONT_SIZE,
+                 duration_ms=DURATION_MS, v_position=V_POSITION):
         super().__init__()
+        self.text = text
+        self.duration_ms = duration_ms
         self.setWindowFlags(
             Qt.FramelessWindowHint
             | Qt.WindowStaysOnTopHint
@@ -57,17 +64,17 @@ class Danmaku(QWidget):
         self.setAttribute(Qt.WA_ShowWithoutActivating)
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
 
-        font = QFont(FONT_FAMILY, FONT_SIZE)
+        font = QFont(font_family, font_size)
         font.setBold(True)
         self.font = font
         fm = QFontMetrics(font)
         pad = OUTLINE_PX + 2
         self.pad = pad
-        self.setFixedSize(fm.horizontalAdvance(TEXT) + 2 * pad,
+        self.setFixedSize(fm.horizontalAdvance(self.text) + 2 * pad,
                           fm.height() + 2 * pad)
 
         screen = QApplication.primaryScreen().geometry()
-        self.y = int(screen.height() * V_POSITION)
+        self.y = int(screen.height() * max(0.0, min(1.0, v_position)))
         self.start_x = screen.left() + screen.width()
         self.end_x = screen.left() - self.width()
 
@@ -81,7 +88,7 @@ class Danmaku(QWidget):
         p.setRenderHint(QPainter.Antialiasing)
         path = QPainterPath()
         path.addText(self.pad, self.pad + QFontMetrics(self.font).ascent(),
-                     self.font, TEXT)
+                     self.font, self.text)
         # black outline first, then solid white fill -> classic danmaku look
         p.strokePath(path, QPen(QColor(0, 0, 0), OUTLINE_PX * 2,
                                 Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
@@ -89,19 +96,43 @@ class Danmaku(QWidget):
 
     def tick(self):
         elapsed = self.clock.elapsed()
-        if elapsed >= DURATION_MS:
+        if elapsed >= self.duration_ms:
             self.anim.stop()
             self.close()
             QApplication.quit()
             return
-        f = elapsed / DURATION_MS
+        f = elapsed / self.duration_ms
         self.move(int(self.start_x + (self.end_x - self.start_x) * f), self.y)
 
 
-def main():
-    app = QApplication(sys.argv)
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Fly one danmaku comment across an X11 screen.")
+    parser.add_argument("text", nargs="?", default=TEXT,
+                        help="comment text (default: the classic warning)")
+    parser.add_argument("--font", default=FONT_FAMILY,
+                        help="font family (default: %(default)s)")
+    parser.add_argument("--font-size", type=int, default=FONT_SIZE,
+                        help="point size (default: %(default)s)")
+    parser.add_argument("--duration", type=float, default=DURATION_MS / 1000,
+                        metavar="SECONDS",
+                        help="crossing time (default: %(default)s)")
+    parser.add_argument("--vertical", type=float, default=V_POSITION,
+                        metavar="0..1",
+                        help="vertical screen position (default: %(default)s)")
+    args = parser.parse_args(argv)
+    if args.duration <= 0:
+        parser.error("--duration must be positive")
+
+    app = QApplication([sys.argv[0]])
     app.setApplicationName("danmaku")
-    danmaku = Danmaku()
+    danmaku = Danmaku(
+        text=args.text,
+        font_family=args.font,
+        font_size=args.font_size,
+        duration_ms=int(args.duration * 1000),
+        v_position=args.vertical,
+    )
     danmaku.setWindowTitle("danmaku")
     danmaku.show()
     # belt and braces: raw X11 shape call regardless of the Qt flag
